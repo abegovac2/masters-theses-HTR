@@ -162,3 +162,6 @@ cython_debug/
 *.png
 *.gif
 *.jpg
+/MINSKI_ZAPISNICI_IMENOVANI_REGIJE_DOKUMENTI
+/minski_zapisnici
+/models

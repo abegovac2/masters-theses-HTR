@@ -88,7 +88,20 @@ def convert_widths_to_rectangles(widths):
     return rectangles
 
 
-def extract_rectangle(image, top_left, bottom_right):
+def extract_rectangle(image, top_left, bottom_right, wiggle_room=None):
+    if wiggle_room is not None:
+        w, h, _ = image.shape
+        x1p, y1p = top_left
+        x2p, y2p = bottom_right
+
+        top_left = [
+            x1p - wiggle_room if 0 <= x1p - wiggle_room <= w else x1p,
+            y1p - wiggle_room if 0 <= y1p - wiggle_room <= h else y1p,
+        ]
+        bottom_right = [
+            x2p + wiggle_room if 0 <= x2p + wiggle_room <= w else x2p,
+            y2p + wiggle_room if 0 <= y2p + wiggle_room <= h else y2p,
+        ]
     x1, y1 = top_left
     x2, y2 = bottom_right
     extracted_region = image[y1:y2, x1:x2]
