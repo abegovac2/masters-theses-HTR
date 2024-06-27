@@ -35,7 +35,7 @@ def apply_pipeline(image, threshold_value=127, min_area=100):
 
 
 def apply_image_cleaning_pipeline(
-    src: str, dest: str, threshold_value=127, min_area=100, n_chunks=4
+    src: str, dest: str, threshold_value=127, min_area=100, n_chunks=4, save=True
 ):
     input_image = cv2.imread(src)
 
@@ -50,4 +50,7 @@ def apply_image_cleaning_pipeline(
 
     output_image = join_chunks(transformed_chunks)
 
-    cv2.imwrite(dest, output_image)
+    if save:
+        cv2.imwrite(dest, output_image)
+
+    return output_image

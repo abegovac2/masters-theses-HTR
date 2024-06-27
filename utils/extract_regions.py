@@ -1,5 +1,6 @@
 from utils.shared import *
 
+
 def get_horizontal_and_vertical_contures(thresh):
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
     close = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations=2)
@@ -21,6 +22,7 @@ def get_horizontal_and_vertical_contures(thresh):
     cnts2 = cnts[0] if len(cnts) == 2 else cnts[1]
 
     return cnts1 + cnts2
+
 
 def get_left_right_bounding(heights):
     heights = sorted(heights, key=lambda rect: rect[3], reverse=True)
