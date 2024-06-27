@@ -64,7 +64,7 @@ if st.session_state.selected_image:
     st.image(image, caption=st.session_state.selected_image, use_column_width=True)
     # if st.button("Process image", on_click=lambda: st.success("pressed")):
     if st.button("Process image"):
-        regions = [4, 5, 6]
+        regions = [5]
         result = td_pipeline._execute(
             f"./{UPLOAD_DIR}/{st.session_state.selected_image}", regions
         )
