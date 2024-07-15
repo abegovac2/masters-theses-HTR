@@ -27,6 +27,9 @@ class ExtractWordsYolo:
             y2 = int(tensor[3].item())
             rectangles.append([[x1, y1], [x2, y2]])
             classes.append(int(cls))
+
+        s = list(sorted(list(zip(rectangles, classes)), key=lambda rect: rect[0][0][1]))
+        rectangles, classes = list(zip(*s))
         return rectangles, classes
 
     def execute(self, image):
