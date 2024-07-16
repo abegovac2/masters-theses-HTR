@@ -6,7 +6,7 @@ from utils.extract_regions import extract_rectangle
 class RegionExtractionService:
     model = None
 
-    def __init__(self, model_path="ml_models/region_detection_model.pt") -> None:
+    def __init__(self, model_path) -> None:
         if self.model is None:
             self.model = YOLO(model_path)
 

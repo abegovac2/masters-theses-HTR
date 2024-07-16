@@ -13,7 +13,7 @@ class TextExtractionService:
     arch = "flor"
     model = None
 
-    def __init__(self, model_path="ml_models/text_detection_model.hdf5") -> None:
+    def __init__(self, model_path) -> None:
         self.tokenizer = Tokenizer(
             chars=self.charset_base, max_text_length=self.max_text_length
         )
