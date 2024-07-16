@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "hand-written-text-extraction"
+version = "0.1.0"
+description = ""
+authors = ["'abegovac2' <'abegovac2@etf.unsa.ba'>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "~3.10.11"
+tensorflow-io-gcs-filesystem = "0.31.0"
+hand-written-text-recognition = {git = "https://github.com/abegovac2/handwritten-text-recognition.git"}
+fastapi = "^0.111.1"
+pydantic-settings = "^2.3.4"
+ultralytics = "8.0.227"
+scikit-learn = "^1.5.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.9.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
