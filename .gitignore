@@ -164,5 +164,8 @@ cython_debug/
 *.jpg
 /MINSKI_ZAPISNICI_IMENOVANI_REGIJE_DOKUMENTI
 /minski_zapisnici
-/models
+/ml_models
+/ds
+/mine_logs2
+/minski_zapisnici_0
 /MINSKI_ZAPISNICI_IMENOVANI_REGIJE_DOKUMENTI_YOLO/lbl

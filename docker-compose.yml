@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+
+  text-extraction-service:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_PATH: ./rest
+        MODELS_PATH: ./ml_models
+        UTILS_PATH: ./utils
+    ports:
+      - 80:80
