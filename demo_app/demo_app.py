@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
 import os
-from run_pipeline import TextDetectionPipeline
+from demo_app.run_pipeline import TextDetectionPipeline
 
 # Set up a directory to store uploaded images
 UPLOAD_DIR = "uploads"
