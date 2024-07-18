@@ -5,6 +5,7 @@ from rest.services import (
 )
 from rest.models import Document, Image, Detection
 from rest.config import settings
+from rest.clients.groq_client import GroqClient
 import cv2
 from typing import List, Tuple
 import numpy as np
@@ -25,10 +26,17 @@ def build_extraction_services() -> (
     )
 
 
+def build_groq_client() -> GroqClient:
+    return GroqClient(
+        settings.GROQ_MODEL, settings.GROQ_API_KEYS, settings.FUEL_SHOT_SIZE
+    )
+
+
 @router.post("")
 async def read_text_from_image(
     upload_image: UploadFile = File(media_type="image/jpeg"),
     extraction_services=Depends(build_extraction_services),
+    llm_client=Depends(build_groq_client),
 ):
     title = upload_image.filename.split(".")[0]
     image_bytes = upload_image.file.read()
@@ -47,6 +55,7 @@ async def read_text_from_image(
 
     for det in detections:
         tes.extract(det)
+        det.text = await llm_client.correct_extraction(det.text)
         det.line_image.image = []
 
     doc.input_image.image = []

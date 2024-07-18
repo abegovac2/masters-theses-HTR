@@ -33,10 +33,6 @@ class WordExtractionService:
 
         midpoint = [(box[0][1] + box[1][1]) // 2 for box in word_rect]
         distances = [[abs(i - j) for j in midpoint] for i in midpoint]
-        with open("./a.txt", "w") as f:
-            f.write(f"{len(distances)}\n\n\n")
-            for d in distances:
-                f.write(f"{len(d)}\n")
         cluster = DBSCAN(eps=25, min_samples=1, metric="precomputed").fit(distances)
         clusters = [i for i in cluster.labels_]
 
