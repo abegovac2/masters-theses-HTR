@@ -34,7 +34,7 @@ COPY ${APP_PATH}/ ${APP_PATH}/
 COPY ${MODELS_PATH}/ ${MODELS_PATH}/
 COPY ${UTILS_PATH}/ ${UTILS_PATH}/
 COPY ./main.py ./main.py
-COPY ./slike_ciste/FormatA/30520.jpg ./30520.jpg
-
+COPY ./.env ./.env
+COPY ./llm_ds_faulty.csv ./llm_ds_faulty.csv
 
 ENTRYPOINT ["python3", "main.py"]
