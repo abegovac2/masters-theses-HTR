@@ -1,7 +1,7 @@
 from typing import List
 from groq import AsyncGroq, RateLimitError
 from functools import cache
-import logging
+import asyncio
 
 
 class GroqClient:
@@ -46,8 +46,8 @@ class GroqClient:
 
     async def correct_extraction(self, orginal_txt: str, call_num: int = 0):
 
-        if call_num > 5:
-            print("To many requests made returning unaltered data")
+        if call_num > 3:
+            print("To many requests made, returning unaltered data")
             return orginal_txt
         messages = self.get_messages(orginal_txt)
 
@@ -58,4 +58,5 @@ class GroqClient:
             return response.choices[0].message.content
         except RateLimitError as e:
             self._cycle_api_key()
+            await asyncio.sleep(float(call_num + 1))
             return await self.correct_extraction(orginal_txt, call_num + 1)
