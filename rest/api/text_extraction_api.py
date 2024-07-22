@@ -9,6 +9,7 @@ from rest.clients.groq_client import GroqClient
 import cv2
 from typing import List, Tuple
 import numpy as np
+import asyncio
 
 from fastapi import APIRouter, UploadFile, File, Depends
 
@@ -55,8 +56,23 @@ async def read_text_from_image(
 
     for det in detections:
         tes.extract(det)
-        det.text = await llm_client.correct_extraction(det.text)
         det.line_image.image = []
+
+    async_jobs = [
+        (
+            asyncio.create_task(llm_client.correct_extraction(det.text))
+            if det.probability < settings.GROQ_THRESHOLD
+            else det.text
+        )
+        for det in detections
+    ]
+
+    await asyncio.gather(*[job for job in async_jobs if not isinstance(job, str)])
+
+    for text, det in list(zip(async_jobs, detections)):
+        if not isinstance(text, str):
+            det.text = text.result()
+            det.probability = -1.0
 
     doc.input_image.image = []
 

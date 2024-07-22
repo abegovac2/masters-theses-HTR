@@ -46,7 +46,7 @@ class BoundingBox(Raw):
 class Detection(Raw):
     text: str
     line_image: Image
-    certanty: float
+    probability: float
     bounding_box: BoundingBox
 
 

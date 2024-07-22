@@ -35,9 +35,8 @@ class TextExtractionService:
         image = preprocess(image, input_size=self.input_size)
         x_test = normalization([image])
         predictions, probabilities = self.model.predict(x_test, ctc_decode=True)
-        predictions = [[self.tokenizer.decode(x) for x in y] for y in predictions]
-        predict = [(el[0][0], el[1][0]) for el in list(zip(predictions, probabilities))]
-        text, probability = predict[0]
+        probability = probabilities[0][0]
+        text = self.tokenizer.decode(predictions[0][0])
         detection.text = text
-        detection.certanty = round(float(probability), 4)
+        detection.probability = round(float(probability), 5)
         return detection

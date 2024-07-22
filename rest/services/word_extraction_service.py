@@ -56,7 +56,7 @@ class WordExtractionService:
         region.detections = [
             Detection(
                 text="",
-                certanty=0,
+                probability=0,
                 line_image=Image(
                     image=extract_rectangle(image, line[0], line[1]),
                     title=f"{region.region_image.title}_{idx}",
