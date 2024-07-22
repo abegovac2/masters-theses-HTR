@@ -1,11 +1,20 @@
 import streamlit as st
 from PIL import Image
 import os
-from demo_app.run_pipeline import TextDetectionPipeline
+from rest.api.text_extraction_api import (
+    build_groq_client,
+    build_extraction_services,
+    read_text_from_image,
+)
+import asyncio
+from fastapi import UploadFile
+import io
+
+# from demo_app.run_pipeline import TextDetectionPipeline
 
 # Set up a directory to store uploaded images
 UPLOAD_DIR = "uploads"
-td_pipeline = TextDetectionPipeline()
+# td_pipeline = TextDetectionPipeline()
 
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
@@ -64,12 +73,22 @@ if st.session_state.selected_image:
     st.image(image, caption=st.session_state.selected_image, use_column_width=True)
     # if st.button("Process image", on_click=lambda: st.success("pressed")):
     if st.button("Process image"):
-        regions = [5]
-        result = td_pipeline._execute(
-            f"./{UPLOAD_DIR}/{st.session_state.selected_image}", regions
+        img = None
+        with open(f"./{UPLOAD_DIR}/{st.session_state.selected_image}", "rb") as r:
+            img = r.read()
+        res = asyncio.run(
+            read_text_from_image(
+                UploadFile(
+                    file=io.BytesIO(img), filename=st.session_state.selected_image
+                ),
+                build_extraction_services(),
+                build_groq_client(),
+            )
         )
-        result = list(zip(regions, result))
-        for i, res in result:
-            st.subheader(f"Region {i}")
-            for r in res:
-                st.image(r[0], r[1], use_column_width=True)
+        regions = [5]
+        for r, reg in res.regions.items():
+            if r not in regions:
+                continue
+            st.subheader(f"Region {r}")
+            for det in reg.detections:
+                st.image(det.line_image.image, det.text, use_column_width=True)

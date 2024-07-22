@@ -56,7 +56,7 @@ async def read_text_from_image(
 
     for det in detections:
         tes.extract(det)
-        det.line_image.image = []
+        # det.line_image.image = []
 
     async_jobs = [
         (
