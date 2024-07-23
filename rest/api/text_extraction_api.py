@@ -52,7 +52,7 @@ async def read_text_from_image(
 
     for region in regions:
         detections.extend(wes.extract(region))
-        region.region_image.image = []
+        region.region_image.image = np.ndarray([0, 0])
 
     for det in detections:
         tes.extract(det)
@@ -74,6 +74,6 @@ async def read_text_from_image(
             det.text = text.result()
             det.probability = -1.0
 
-    doc.input_image.image = []
+    doc.input_image.image = np.ndarray([0, 0])
 
     return doc

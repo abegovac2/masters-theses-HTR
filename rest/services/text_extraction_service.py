@@ -1,6 +1,6 @@
-from src.data.generator import Tokenizer
-from src.network.model import HTRModel
-from src.data.preproc import preprocess, normalization
+from hand_written_text_recognition.src.data.generator import Tokenizer
+from hand_written_text_recognition.src.network.model import HTRModel
+from hand_written_text_recognition.src.data.preproc import preprocess, normalization
 from rest.models.model import Detection
 import cv2
 
@@ -37,6 +37,6 @@ class TextExtractionService:
         predictions, probabilities = self.model.predict(x_test, ctc_decode=True)
         probability = probabilities[0][0]
         text = self.tokenizer.decode(predictions[0][0])
-        detection.text = text
+        detection.text = text.upper()
         detection.probability = round(float(probability), 5)
         return detection

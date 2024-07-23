@@ -849,7 +849,7 @@ numpy = ">=1.17.3"
 
 [[package]]
 name = "hand-written-text-recognition"
-version = "0.1.0"
+version = "0.3.1"
 description = ""
 optional = false
 python-versions = ">=3.10,<3.12"
@@ -868,7 +868,7 @@ tqdm = "4.66.1"
 type = "git"
 url = "https://github.com/abegovac2/handwritten-text-recognition.git"
 reference = "HEAD"
-resolved_reference = "33ef355b5f3a0960d06bca9a2a6b2b57dd776f21"
+resolved_reference = "95f1c45e7180588af600d24983ad431ff2dcdfbd"
 
 [[package]]
 name = "httpcore"

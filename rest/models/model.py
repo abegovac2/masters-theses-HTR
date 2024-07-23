@@ -7,13 +7,13 @@ import base64
 
 
 def numpy_array_serializer(img: np.ndarray):
-    if not img:
+    if not img.any():
         return b""
     return base64.b64encode(img.tobytes())
 
 
 def cv2_image_serializer(img: MatLike):
-    if not img:
+    if not img.any():
         return b""
     return base64.b64encode(cv2.imencode(".jpg", img)[1]).decode()
 
