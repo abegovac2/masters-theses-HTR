@@ -58,7 +58,8 @@ class GroqClient:
             return response.choices[0].message.content
         except RateLimitError as e:
             retry_after = float(e.response.headers.get("retry-after", 0))
-            # print(f"Retrying after {retry_after}s")
+            print(f"Exception ", e)
+            print(f"Retrying after {retry_after}s")
             # self._cycle_api_key()
             await asyncio.sleep(float(retry_after))
             # call_num += 1

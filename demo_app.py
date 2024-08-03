@@ -26,7 +26,7 @@ def clear_helper_dir(helper_dir="./helper_dir"):
 
 
 # Title of the app
-st.title("Image Upload and History App")
+st.title("Text extraction demo app")
 
 # Initialize session state to store the selected image file name
 if "selected_image" not in st.session_state:
