@@ -162,10 +162,13 @@ cython_debug/
 *.png
 *.gif
 *.jpg
+*.zip
 /MINSKI_ZAPISNICI_IMENOVANI_REGIJE_DOKUMENTI
 /minski_zapisnici
 /ml_models
+/ml_models_old
 /ds
 /mine_logs2
 /minski_zapisnici_0
 /MINSKI_ZAPISNICI_IMENOVANI_REGIJE_DOKUMENTI_YOLO/lbl
+/htr_data

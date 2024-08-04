@@ -1,43 +1,22 @@
-from rest.services import (
-    RegionExtractionService,
-    WordExtractionService,
-    TextExtractionService,
-)
+import asyncio
+import cv2
 from rest.models import Document, Image, Detection
 from rest.config import settings
-from rest.clients.groq_client import GroqClient
-import cv2
-from typing import List, Tuple
+from typing import List
 import numpy as np
-import asyncio
 
 from fastapi import APIRouter, UploadFile, File, Depends
+from rest.dependencies import get_extraction_services, get_groq_client
 
 
 router = APIRouter(prefix="/v1/text-extraction")
 
 
-def build_extraction_services() -> (
-    Tuple[RegionExtractionService, WordExtractionService, TextExtractionService]
-):
-    return (
-        RegionExtractionService(model_path=settings.REGION_EXTRACTION_MODEL_PATH),
-        WordExtractionService(model_path=settings.WORD_EXTRACTION_MODEL_PATH),
-        TextExtractionService(model_path=settings.TEXT_EXTRACTION_MODEL_PATH),
-    )
-
-
-def build_groq_client() -> GroqClient:
-    return GroqClient(
-        settings.GROQ_MODEL, settings.GROQ_API_KEYS, settings.FUEL_SHOT_SIZE
-    )
-
-
 @router.post("")
 async def read_text_from_image(
     upload_image: UploadFile = File(media_type="image/jpeg"),
-    extraction_services=Depends(build_extraction_services),
-    llm_client=Depends(build_groq_client),
+    extraction_services=Depends(get_extraction_services),
+    llm_client=Depends(get_groq_client),
 ):
     title = upload_image.filename.split(".")[0]
     image_bytes = upload_image.file.read()
