@@ -69,4 +69,8 @@ class WordExtractionService:
             for idx, line in enumerate(lines)
         ]
 
+        region.detections = list(
+            sorted(region.detections, key=lambda det: det.bounding_box.top_left.y)
+        )
+
         return region.detections

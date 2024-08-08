@@ -1,10 +1,10 @@
 import streamlit as st
 from PIL import Image
 import os
-from rest.api.text_extraction_api import (
-    build_groq_client,
-    build_extraction_services,
-    read_text_from_image,
+from rest.api.text_extraction_api import read_text_from_image
+from rest.dependencies import (
+    get_groq_client,
+    get_extraction_services,
 )
 import asyncio
 from fastapi import UploadFile
@@ -20,11 +20,6 @@ if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
 
-def clear_helper_dir(helper_dir="./helper_dir"):
-    for f in os.listdir(helper_dir):
-        os.remove(f"{helper_dir}/{f}")
-
-
 # Title of the app
 st.title("Text extraction demo app")
 
@@ -37,7 +32,6 @@ uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png
 
 # Handle file upload
 if uploaded_file is not None:
-    clear_helper_dir()
     # Save uploaded file to the uploads directory
     file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
     with open(file_path, "wb") as f:
@@ -62,7 +56,6 @@ def update_selected_image(file):
 if uploaded_files:
     for file in uploaded_files:
         if st.sidebar.button(file, on_click=update_selected_image, args=(file,)):
-            clear_helper_dir()
             update_selected_image(file)
 else:
     st.sidebar.write("No images uploaded yet.")
@@ -71,7 +64,6 @@ else:
 if st.session_state.selected_image:
     image = Image.open(os.path.join(UPLOAD_DIR, st.session_state.selected_image))
     st.image(image, caption=st.session_state.selected_image, use_column_width=True)
-    # if st.button("Process image", on_click=lambda: st.success("pressed")):
     if st.button("Process image"):
         img = None
         with open(f"./{UPLOAD_DIR}/{st.session_state.selected_image}", "rb") as r:
@@ -81,11 +73,11 @@ if st.session_state.selected_image:
                 UploadFile(
                     file=io.BytesIO(img), filename=st.session_state.selected_image
                 ),
-                build_extraction_services(),
-                build_groq_client(),
+                get_extraction_services(),
+                get_groq_client(),
             )
         )
-        regions = [5]
+        regions = [i for i in range(10)]
         for r, reg in res.regions.items():
             if r not in regions:
                 continue
