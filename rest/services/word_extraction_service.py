@@ -31,42 +31,20 @@ class WordExtractionService:
         if len(word_rect) == 0:
             return []
 
-        midpoint = [(box[0][1] + box[1][1]) // 2 for box in word_rect]
-        distances = [[abs(i - j) for j in midpoint] for i in midpoint]
-        cluster = DBSCAN(eps=25, min_samples=1, metric="precomputed").fit(distances)
-        clusters = [i for i in cluster.labels_]
-
-        regions = {}
-        for clust, box in list(zip(clusters, word_rect)):
-            if regions.get(clust, None) is None:
-                regions[clust] = [box]
-            else:
-                regions[clust].append(box)
-
-        lines = []
-        for cluster, boxes in regions.items():
-            boxes = list(sorted(boxes, key=lambda box: box[0][0]))
-            l_x_min = min([box[0][0] for box in boxes])
-            l_y_min = min([box[0][1] for box in boxes])
-            l_x_max = max([box[1][0] for box in boxes])
-            l_y_max = max([box[1][1] for box in boxes])
-
-            lines.append([[l_x_min, l_y_min], [l_x_max, l_y_max]])
-
         region.detections = [
             Detection(
                 text="",
                 probability=0,
                 line_image=Image(
-                    image=extract_rectangle(image, line[0], line[1]),
+                    image=extract_rectangle(image, word[0], word[1]),
                     title=f"{region.region_image.title}_{idx}",
                 ),
                 bounding_box=BoundingBox(
-                    top_left=Point(x=line[0][0], y=line[0][1]),
-                    bottom_right=Point(x=line[1][0], y=line[1][1]),
+                    top_left=Point(x=word[0][0], y=word[0][1]),
+                    bottom_right=Point(x=word[1][0], y=word[1][1]),
                 ),
             )
-            for idx, line in enumerate(lines)
+            for idx, word in enumerate(word_rect)
         ]
 
         region.detections = list(

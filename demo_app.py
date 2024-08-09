@@ -6,6 +6,7 @@ from rest.dependencies import (
     get_groq_client,
     get_extraction_services,
 )
+from rest.api.text_extraction_api import line, word_a, word_b
 import asyncio
 from fastapi import UploadFile
 import io
@@ -69,7 +70,7 @@ if st.session_state.selected_image:
         with open(f"./{UPLOAD_DIR}/{st.session_state.selected_image}", "rb") as r:
             img = r.read()
         res = asyncio.run(
-            read_text_from_image(
+            word_a(
                 UploadFile(
                     file=io.BytesIO(img), filename=st.session_state.selected_image
                 ),

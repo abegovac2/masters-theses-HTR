@@ -45,6 +45,8 @@ class GroqClient:
         ]
 
     async def correct_extraction(self, orginal_txt: str, call_num: int = 0):
+        if not orginal_txt:
+            return orginal_txt
 
         if call_num > 3:
             print("To many requests made, returning unaltered data")
