@@ -23,7 +23,7 @@ def read_content(xml_file: str):
         xmax = int(boxes.find("bndbox/xmax").text)
         name = str(boxes.find("name").text).upper()
 
-        row = [filename, w, h, xmin, ymin, xmax, ymax, w_idx, name]
+        row = [filename, w_idx, w, h, xmin, ymin, xmax, ymax, name]
         list_with_all_boxes.append(row)
 
     return list_with_all_boxes
@@ -32,7 +32,7 @@ def read_content(xml_file: str):
 def generate_word_labels(path, labels):
     """
     Format
-    filename, img_width, img_height, xmin, ymin, xmax, ymax, word_idx, word
+    filename, img_width, img_height, word_idx, xmin, ymin, xmax, ymax, word
     """
     with open(f"{path}/word_labels.txt", "w", encoding="utf8") as file:
         for label in labels:
@@ -57,12 +57,12 @@ def generate_line_labels(path, labels):
             xml_file = f"{path}/{label}"
             boxes = read_content(xml_file)
             label = label.removesuffix(".xml")
-            w0, h0 = boxes[0][1], boxes[0][2]
+            w0, h0 = boxes[0][2], boxes[0][3]
             filename0 = boxes[0][0]
             per_line = h0 // 11 + 2
             regions = [((i + 1) * per_line, []) for i in range(11)]
             regions.append((h0, []))
-            middle = [(box[6] + box[4]) // 2 for box in boxes]
+            middle = [(box[5] + box[7]) // 2 for box in boxes]
             distances = [[abs(i - j) for j in middle] for i in middle]
             cluster = DBSCAN(eps=25, min_samples=1, metric="precomputed").fit(distances)
             clusters = [i for i in cluster.labels_]
@@ -75,19 +75,19 @@ def generate_line_labels(path, labels):
 
             for l_idx, (clust, boxes) in enumerate(regions.items()):
                 boxes = list(sorted(boxes, key=lambda box: box[3]))
-                text = " ".join([box[8] for box in boxes])
+                text = " ".join([box[-1] for box in boxes])
                 text = text.strip(" ")
                 if len(text) == 0:
                     continue
-                l_x_min = min([box[3] for box in boxes])
-                l_y_min = min([box[4] for box in boxes])
-                l_x_max = max([box[5] for box in boxes])
-                l_y_max = max([box[6] for box in boxes])
+                l_x_min = min([box[4] for box in boxes])
+                l_y_min = min([box[5] for box in boxes])
+                l_x_max = max([box[6] for box in boxes])
+                l_y_max = max([box[7] for box in boxes])
                 line = [
                     filename0,
+                    l_idx,
                     w0,
                     h0,
-                    l_idx,
                     l_x_min,
                     l_y_min,
                     l_x_max,
@@ -108,7 +108,7 @@ def generate_region_labels(path, labels):
             xml_file = f"{path}/{label}"
             boxes = read_content(xml_file)
             label = label.removesuffix(".xml")
-            w0, h0 = boxes[0][1], boxes[0][2]
+            w0, h0 = boxes[0][2], boxes[0][3]
             filename0 = boxes[0][0]
             region_sizes = [3, 3, 3, 2]
             s = sum(region_sizes) + 2
@@ -119,14 +119,14 @@ def generate_region_labels(path, labels):
             regions[h0] = []
             for box in boxes:
                 for dims, boxes1 in regions.items():
-                    if box[4] < dims:
+                    if box[5] < dims:
                         boxes1.append(box)
                         break
 
             regions = list(regions.items())
 
             for r_idx, (dims, boxes) in enumerate(regions):
-                text = " ".join([box[8] for box in boxes])
+                text = " ".join([box[-1] for box in boxes])
                 text = text.strip(" ")
                 if len(text) == 0:
                     continue

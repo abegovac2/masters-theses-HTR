@@ -20,5 +20,5 @@ def get_extraction_services() -> (
 
 def get_groq_client() -> GroqClient:
     return GroqClient(
-        settings.GROQ_MODEL, settings.GROQ_API_KEYS, settings.FUEL_SHOT_SIZE
+        settings.GROQ_MODEL, settings.GROQ_API_KEYS, settings.FEW_SHOT_SIZE
     )

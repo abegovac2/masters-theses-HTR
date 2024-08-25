@@ -7,25 +7,28 @@ import asyncio
 class GroqClient:
 
     def __init__(
-        self, groq_model: str, groq_api_keys: List[str], fuel_shot_size: int
+        self, groq_model: str, groq_api_keys: List[str], few_shot_size: int
     ) -> None:
         self._current_key = 0
         self._groq_api_keys = groq_api_keys
         self._client = AsyncGroq(api_key=self._groq_api_keys[self._current_key])
         self._groq_model = groq_model
-        self._fuel_shot_size = fuel_shot_size
+        self._few_shot_size = few_shot_size
 
     def _cycle_api_key(self):
         self._current_key = (self._current_key + 1) % len(self._groq_api_keys)
         self._client = AsyncGroq(api_key=self._groq_api_keys[self._current_key])
 
     @cache
-    def get_fuel_shot(self):
-        fuel_shot = ""
+    def get_few_shot(self):
+        few_shot = ""
         with open("llm_ds_faulty.csv", "r", encoding="utf8") as rf:
-            for i in range(self._fuel_shot_size):
-                fuel_shot += rf.readline()
-        return fuel_shot
+            for i in range(self._few_shot_size):
+                line = rf.readline()
+                line = line.split()
+
+                few_shot += f"{line[0]} => {line[1]}"
+        return few_shot
 
     def get_messages(self, user_prompt: str) -> str:
 
@@ -39,7 +42,7 @@ class GroqClient:
                     bez dodavanja dodatnih komentara ili objašnjenja.
 
                     Evo nekoliko primjera kako to treba da izgleda:
-                    {self.get_fuel_shot()}""",
+                    {self.get_few_shot()}""",
             },
             {"role": "user", "content": user_prompt},
         ]

@@ -1,7 +1,6 @@
 import streamlit as st
 from PIL import Image
 import os
-from rest.api.text_extraction_api import read_text_from_image
 from rest.dependencies import (
     get_groq_client,
     get_extraction_services,

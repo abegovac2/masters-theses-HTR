@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     )
     GROQ_API_KEYS: List[str] = []
     GROQ_MODEL: str = "llama3-8b-8192"
-    FUEL_SHOT_SIZE: int = 50
+    FEW_SHOT_SIZE: int = 50
     GROQ_THRESHOLD: float = 0.5
 
     class Config:
