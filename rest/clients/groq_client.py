@@ -14,6 +14,7 @@ class GroqClient:
         self._client = AsyncGroq(api_key=self._groq_api_keys[self._current_key])
         self._groq_model = groq_model
         self._few_shot_size = few_shot_size
+        self._semaphore = asyncio.Semaphore(15)
 
     def _cycle_api_key(self):
         self._current_key = (self._current_key + 1) % len(self._groq_api_keys)
@@ -25,8 +26,7 @@ class GroqClient:
         with open("llm_ds_faulty.csv", "r", encoding="utf8") as rf:
             for i in range(self._few_shot_size):
                 line = rf.readline()
-                line = line.split()
-
+                line = line.split(",")
                 few_shot += f"{line[0]} => {line[1]}"
         return few_shot
 
@@ -41,10 +41,14 @@ class GroqClient:
                     Tvoj odgovor treba da bude samo ispravljena rečenica,
                     bez dodavanja dodatnih komentara ili objašnjenja.
 
-                    Evo nekoliko primjera kako to treba da izgleda:
-                    {self.get_few_shot()}""",
+                    Evo nekoliko primjera kako ta prepravka treba da izgleda,
+                    na lijevoj strani su pogrešne rečenice a na desnoj njihove prepravke:
+                    {self.get_few_shot()}
+
+                    U svome odgovoru samo vraćaj preravke.
+                    """,
             },
-            {"role": "user", "content": user_prompt},
+            {"role": "user", "content": f"{user_prompt} => "},
         ]
 
     async def correct_extraction(self, orginal_txt: str, call_num: int = 0):
@@ -57,10 +61,11 @@ class GroqClient:
         messages = self.get_messages(orginal_txt)
 
         try:
-            response = await self._client.chat.completions.create(
-                messages=messages, model=self._groq_model
-            )
-            return response.choices[0].message.content
+            async with self._semaphore:
+                response = await self._client.chat.completions.create(
+                    messages=messages, model=self._groq_model
+                )
+                return response.choices[0].message.content.upper()
         except RateLimitError as e:
             retry_after = float(e.response.headers.get("retry-after", 0))
             print(f"Exception ", e)
