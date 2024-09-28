@@ -5,7 +5,7 @@ from rest.dependencies import (
     get_groq_client,
     get_extraction_services,
 )
-from rest.api.text_extraction_api import line, word_a, word_b
+from rest.api.text_extraction_api import line
 import asyncio
 from fastapi import UploadFile
 import io
@@ -69,12 +69,14 @@ if st.session_state.selected_image:
         with open(f"./{UPLOAD_DIR}/{st.session_state.selected_image}", "rb") as r:
             img = r.read()
         res = asyncio.run(
-            word_a(
+            line(
                 UploadFile(
                     file=io.BytesIO(img), filename=st.session_state.selected_image
                 ),
-                get_extraction_services(),
-                get_groq_client(),
+                include_image=True,
+                enhance_with_llm=False,
+                extraction_services=get_extraction_services(),
+                llm_client=get_groq_client(),
             )
         )
         regions = [i for i in range(10)]

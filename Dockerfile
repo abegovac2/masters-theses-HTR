@@ -22,10 +22,6 @@ RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
-#ARG APP_PATH=${APP_PATH}
-#ARG MODELS_PATH=${MODELS_PATH}
-#ARG UTILS_PATH=${UTILS_PATH}
-
 WORKDIR /app
 
 COPY ./src/rest ./rest/

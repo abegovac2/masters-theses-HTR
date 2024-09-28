@@ -71,7 +71,6 @@ class TextExtractionTemplate:
             ]
             distances = [[abs(i - j) for j in midpoints] for i in midpoints]
             if len(distances) == 0:
-                print(f"distance {len(distances)}")
                 continue
             cluster = DBSCAN(eps=25, min_samples=1, metric="precomputed").fit(distances)
             clusters = [i for i in cluster.labels_]
@@ -97,7 +96,6 @@ class TextExtractionTemplate:
                 y_min = min([box.bounding_box.top_left.y for box in boxes])
                 x_max = max([box.bounding_box.bottom_right.x for box in boxes])
                 y_max = max([box.bounding_box.bottom_right.y for box in boxes])
-
                 merged_detections.append(
                     Detection(
                         text=" ".join([box.text for box in boxes]),
