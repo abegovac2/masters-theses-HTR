@@ -15,12 +15,14 @@ from statistics import mean
 
 
 class TextExtractionTemplate:
+
     def __init__(
         self,
         text_extraction_service: TextExtractionService,
         word_extraction_service: WordExtractionService,
         region_extraction_service: RegionExtractionService,
         groq_client: GroqClient,
+        include_image: bool = False,
         groq_threshold: float = 0.5,
     ) -> None:
         self._tes = text_extraction_service
@@ -28,16 +30,19 @@ class TextExtractionTemplate:
         self._res = region_extraction_service
         self._client = groq_client
         self._groq_threshold = groq_threshold
+        self._include_image = include_image
 
     def extract_regions(self, document: Document) -> Document:
-        return self._res.extract(document)
+        result = self._res.extract(document)
+        if not self._include_image:
+            document.input_image.image = np.ndarray([0, 0])
+        return result
 
     def extract_words(self, document: Document) -> Document:
         regions = [val for key, val in document.regions.items()]
 
         for region in regions:
             self._wes.extract(region)
-            # region.region_image.image = np.ndarray([0, 0])
 
         return document
 
@@ -45,6 +50,11 @@ class TextExtractionTemplate:
         for region_idx, region in document.regions.items():
             for detection in region.detections:
                 self._tes.extract(detection)
+                if not self._include_image:
+                    detection.line_image.image = np.ndarray([0, 0])
+
+            if not self._include_image:
+                region.region_image.image = np.ndarray([0, 0])
 
         return document
 
@@ -60,6 +70,9 @@ class TextExtractionTemplate:
                 for detection in detections
             ]
             distances = [[abs(i - j) for j in midpoints] for i in midpoints]
+            if len(distances) == 0:
+                print(f"distance {len(distances)}")
+                continue
             cluster = DBSCAN(eps=25, min_samples=1, metric="precomputed").fit(distances)
             clusters = [i for i in cluster.labels_]
 
