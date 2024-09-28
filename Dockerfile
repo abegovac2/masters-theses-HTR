@@ -1,4 +1,4 @@
-FROM python:3.10-buster as builder
+FROM python:3.10-slim as builder
 
 RUN pip install poetry==1.6.1
 
@@ -8,8 +8,6 @@ ENV POETRY_NO_INTERACTION=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
 WORKDIR /app
-
-ARG APP_PATH=${APP_PATH}
 
 COPY ./pyproject.toml ./poetry.lock ./
 
@@ -24,17 +22,17 @@ RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
-ARG APP_PATH=${APP_PATH}
-ARG MODELS_PATH=${MODELS_PATH}
-ARG UTILS_PATH=${UTILS_PATH}
+#ARG APP_PATH=${APP_PATH}
+#ARG MODELS_PATH=${MODELS_PATH}
+#ARG UTILS_PATH=${UTILS_PATH}
 
 WORKDIR /app
 
-COPY ${APP_PATH}/ ${APP_PATH}/
-COPY ${MODELS_PATH}/ ${MODELS_PATH}/
-COPY ${UTILS_PATH}/ ${UTILS_PATH}/
-COPY ./main.py ./main.py
-COPY ./.env ./.env
-COPY ./llm_ds_faulty.csv ./llm_ds_faulty.csv
+COPY ./src/rest ./rest/
+COPY ./src/ml_models ./ml_models/
+COPY ./src/utils/ ./utils/
+COPY ./src/main.py ./main.py
+COPY ./src/.env ./.env
+COPY ./src/llm_ds_faulty.csv ./llm_ds_faulty.csv
 
 ENTRYPOINT ["python3", "main.py"]

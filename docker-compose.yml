@@ -5,9 +5,9 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-      args:
-        APP_PATH: ./rest
-        MODELS_PATH: ./ml_models
-        UTILS_PATH: ./utils
+      #args:
+        #APP_PATH: ./src/rest
+        #MODELS_PATH: ./src/ml_models
+        #UTILS_PATH: ./src/utils
     ports:
       - 80:80
